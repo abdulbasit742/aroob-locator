@@ -2,42 +2,41 @@
 
 ## Scope
 
-These instructions apply to the entire `abdulbasit742/aroob-locator` repository. More specific AGENTS.md or AGENTS.override.md files in subdirectories may refine them.
+These instructions apply to the entire `abdulbasit742/aroob-locator` repository.
 
-Project: **aroob-locator**.
+Project: **Aroob Locator**, a consent-first, short-lived FastAPI location-sharing service.
 
-Detected root stack: **Repository layout must be discovered before editing; no supported root build manifest was detected.**.
+## Architecture
 
-## Working method
-
-1. Read README.md, the relevant manifests, and nearby tests before editing.
-2. Check the current diff and preserve unrelated user changes.
-3. Make the smallest coherent change that solves the task; follow existing names, patterns, and directory boundaries.
-4. Do not hand-edit generated, vendored, dependency, build-output, model-weight, or dataset files unless the task explicitly targets them.
-5. Update tests and documentation when behavior, configuration, public APIs, or setup steps change.
+- `app.py`: HTTP boundary, rate limits, security headers, and static pages
+- `locator/core.py`: capability lifecycle and latest-point-only retention
+- `web/`: same-origin UI with no remote executable assets
+- `tests/`: lifecycle, authorization, API, and source-contract checks
+- `scripts/security_check.py`: repository security guard
+- `render.yaml`: reviewed single-process deployment baseline
 
 ## Commands
 
-- Read README.md and inspect nested directories for package.json, pyproject.toml, requirements.txt, Dockerfiles, Makefiles, or service-specific instructions.
-- Do not invent build, test, deployment, or migration commands. Record newly verified commands in README.md or a nested AGENTS.md.
+- install: `python -m pip install --requirement requirements-dev.txt`
+- test: `pytest`
+- compile: `python -m compileall -q app.py locator scripts tests`
+- JavaScript syntax: `node --check web/assets/index.js && node --check web/assets/share.js && node --check web/assets/viewer.js`
+- security scan: `python scripts/security_check.py`
+- run: `uvicorn app:app --reload`
 
-## Verification
+## Safety rules
 
-- Run the narrowest relevant test first, then the repository's available lint, type-check, test, and build commands.
-- Never report a check as passed unless it was actually run. State skipped checks and the concrete reason.
-- For UI changes, verify loading, empty, error, and success states plus keyboard access and responsive layout.
-- For API or persistence changes, verify validation, authorization, failure behavior, and backward compatibility.
-
-## Security and side effects
-
-- Never commit secrets, tokens, passwords, private keys, production data, or populated environment files. Use documented environment variables and sanitized examples.
-- Treat migrations, deployments, billing, live network calls, account changes, destructive Git operations, and external messages as side effects. Do not perform them without explicit task authorization.
-- Validate untrusted input at trust boundaries and avoid logging credentials, personal data, prompts containing secrets, or raw third-party payloads.
-- Privacy-sensitive capabilities: use synthetic fixtures by default. Do not access real cameras, location, biometrics, remote devices, or surveillance feeds without explicit authorization and visible user consent.
+1. Never add public location lookup, session enumeration, background tracking, or identity/phone-number search.
+2. Keep acceptance, upload, and viewer capabilities separate and out of URLs sent to the server.
+3. Preserve explicit consent, default approximate precision, bounded expiry, latest-point-only retention, and stop/erase controls for both sides.
+4. Do not add analytics, remote scripts, automatic map tiles, reverse geocoding, SMS token transport, or third-party APIs without documenting the privacy boundary and obtaining an explicit product requirement.
+5. Never log authorization headers, capability values, request bodies, or coordinates.
+6. Persistent or multi-instance storage requires explicit TTL, deletion, encryption, authorization, and threat-model review.
+7. Use only synthetic coordinates in tests and documentation.
 
 ## Completion checklist
 
-- The requested behavior is implemented with a focused diff.
-- Relevant automated checks pass, or any unavailable checks are clearly identified.
-- No secrets, generated artifacts, or unrelated formatting churn were introduced.
-- The final handoff summarizes changed files, verification evidence, risks, and any follow-up work.
+- all tests, compile checks, JavaScript syntax checks, and the security scanner pass
+- no archive-only source or generated deployment artifact is committed
+- no capability or coordinate appears in logs, docs, fixtures, query strings, or public endpoints
+- README and security audit match the actual retention and deployment behavior
